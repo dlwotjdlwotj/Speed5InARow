@@ -5,12 +5,16 @@ using UnityEngine;
 
 public class PutStone : MonoBehaviour
 {
-    const int white = 0;
-    const int black = 1;
+    const int white = 1;
+    const int black = 2;
 
     int stoneColor = white;
     public GameObject blackStone, whiteStone;
     GameObject stone;
+    public GameObject GameEndUI;
+    public GameObject WinUI;
+    public GameObject LoseUI;
+
     int[][] direction = new int[8][]; //오목인지 확인하는 방향 위부터 시계방향
     int[][] occupied = new int[19][]; //위치에 바둑알 있는지 확인
     Boolean win = false;
@@ -21,6 +25,9 @@ public class PutStone : MonoBehaviour
         if (stoneColor == white)
             stone = whiteStone;
         else stone = blackStone;
+        GameEndUI.SetActive(false);
+        WinUI.SetActive(false);
+        LoseUI.SetActive(false);
     }
 
     void setDirection()
@@ -70,6 +77,12 @@ public class PutStone : MonoBehaviour
             {
                 Instantiate(stone, new Vector3(getOrigCoor(x), getOrigCoor(y), 0), Quaternion.identity);
                 occupied[x][y] = stoneColor;
+                searchLine5(x, y);
+                if (win)
+                {
+                    GameEndUI.SetActive(true);
+                    WinUI.SetActive(true);
+                }
             }
         }
     }
@@ -90,23 +103,23 @@ public class PutStone : MonoBehaviour
 
     void searchLine5(int x, int y)
     {
-        int checkX = x, checkY = y;
+        int checkX, checkY;
         for(int i = 0;i < 8;i++)
         {
-            for(int j = 0;j < 5; j++)
+            checkX = x;
+            checkY = y;
+            for (int j = 0;j < 4; j++)
             {
                 checkX += direction[i][0];
                 checkY += direction[i][1];
                 if (occupied[checkX][checkY]!=stoneColor)
                     break;
-                if (j == 4)
+                if (j == 3)
                 {
                     win = true;
                     return;
                 }
             }
-            checkX = x;
-            checkY = y;
         }
     }
 }
